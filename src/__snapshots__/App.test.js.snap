@@ -1,0 +1,52 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+<div
+  className="App"
+>
+  <div
+    className="title"
+  >
+    Romeview
+  </div>
+  <div
+    className="subtitle"
+  >
+    Translate roman numerals
+  </div>
+  <div>
+    <div
+      className="input-title"
+    >
+      Decimal
+    </div>
+    <div>
+      <input
+        onChange={[Function]}
+        placeholder="Type a decimal up to 3999"
+        type="text"
+      />
+    </div>
+    <div
+      className="error"
+    >
+      
+    </div>
+    <button
+      onClick={[Function]}
+    >
+      &lt;--&gt;
+    </button>
+    <div
+      className="output-title"
+    >
+      Numerals
+    </div>
+    <div
+      className="output"
+    >
+      Output
+    </div>
+  </div>
+</div>
+`;
