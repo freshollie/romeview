@@ -1,0 +1,114 @@
+.Translator {
+  margin-top: 3rem;
+  display: flex;
+  align-items: flex-start;
+}
+
+.swap-button {
+  margin: 2rem;
+  align-self: center;
+  border: 1px;
+  border-radius: 0.5rem;
+  border-color: rgb(83, 83, 83);
+  border-style: solid;
+  transition: color linear 0.1s, background-color linear 0.1s,
+    border-color linear 0.1s;
+}
+
+.swap-button:focus {
+  outline: 0;
+}
+
+.swap-button:hover {
+  background-color: rgb(168, 216, 255);
+  color: white;
+  border-color: rgb(168, 216, 255);
+}
+
+.swap-button-active {
+  transform: rotate(180deg);
+  transition: transform ease-in-out 0.2s;
+}
+
+.container-title {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  font-weight: 100;
+  text-align: center;
+  transition: all linear 0.2s;
+}
+
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.input,
+.output-container {
+  height: 15rem;
+  font-size: 2rem;
+  border: 1px;
+  border-style: solid;
+  border-radius: 1rem;
+  border-color: rgb(221, 221, 221);
+  padding: 1rem;
+  text-align: center;
+  transition: all ease-in-out 0.2s;
+}
+
+.input-error {
+  border-color: red;
+  color: red;
+}
+
+.output-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.input:focus {
+  outline: 0;
+}
+
+.output-placeholder {
+  color: grey;
+}
+
+.error {
+  margin-top: 1rem;
+  font-size: 1.2rem;
+  color: red;
+  height: 1rem;
+}
+
+@media screen and (max-width: 1000px) {
+  .Translator {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .container {
+    width: 100%;
+  }
+
+  .input,
+  .output-container {
+    height: 4rem;
+    font-size: 1rem;
+  }
+
+  .output {
+  }
+
+  .swap-button {
+    transform: rotate(90deg);
+  }
+
+  .swap-button-active {
+    transform: rotate(270deg);
+    transition: transform ease-in-out 0.2s;
+  }
+}
