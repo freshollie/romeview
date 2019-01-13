@@ -40,10 +40,12 @@ it("converts input to numerals on input", async () => {
 it("allows input and output to be switched", async () => {
   const wrapper = shallow(<Translator />);
 
-  expect(wrapper.find(".input-title").text()).toBe("Decimal");
+  expect(wrapper.find("#input-title").text()).toBe("Decimal");
+  expect(wrapper.find("#output-title").text()).toBe("Numerals");
 
   wrapper.find("button").simulate("click");
-  expect(wrapper.find(".input-title").text()).toBe("Numerals");
+  expect(wrapper.find("#input-title").text()).toBe("Numerals");
+  expect(wrapper.find("#output-title").text()).toBe("Decimal");
 });
 
 it("allows numerals to be translated to decimals", async () => {
@@ -61,13 +63,17 @@ it("allows numerals to be translated to decimals", async () => {
   expect(wrapper.find(".output").text()).toBe("3922");
 });
 
-it("shows placeholder in output when nothing entered", async () => {
+it("shows nothing in output when nothing entered", async () => {
   const wrapper = shallow(<Translator />);
+  romegen.toNumerals.mockImplementation(async () => "MMIX");
 
-  wrapper.find("input").simulate("change", { target: { value: "" } });
+  wrapper.find("input").simulate("change", { target: { value: "2009" } });
 
   await flushPromises();
-  expect(wrapper.find(".output").text()).toBe("Output");
+
+  wrapper.find("input").simulate("change", { target: { value: "" } });
+  await flushPromises();
+  expect(wrapper.find(".output").text()).toBe("");
 });
 
 async function testErrorMessage(error, message) {
@@ -97,6 +103,19 @@ it("shows any errors from api", async () => {
   );
 });
 
+it("highlights input box on error", async () => {
+  romegen.toNumerals.mockImplementation(async () => {
+    throw new Error("Oops");
+  });
+  const wrapper = shallow(<Translator />);
+
+  wrapper.find("input").simulate("change", { target: { value: "MMMCMXXII" } });
+
+  await flushPromises();
+
+  expect(wrapper.find("input").hasClass("input-error")).toBeTruthy();
+});
+
 it("shows error messages from failure", async () => {
   await testErrorMessage(
     {
@@ -110,7 +129,7 @@ it("shows error messages from failure", async () => {
   await testErrorMessage(new Error("Idk what this is"), "Unknown error");
 });
 
-it("clears error messages on input", async () => {
+it("clears error messages when valid input given", async () => {
   romegen.toNumerals.mockImplementation(async () => {
     throw new Error("Some error");
   });
@@ -121,19 +140,45 @@ it("clears error messages on input", async () => {
 
   expect(wrapper.find(".error").text()).toBe("Unknown error");
 
+  romegen.toNumerals.mockImplementation(async () => {
+    return "anything";
+  });
+
   wrapper.find("input").simulate("change", { target: { value: "asasd" } });
+  await flushPromises();
+
   expect(wrapper.find(".error").text()).toBe("");
 });
 
-it("clears output on error", async () => {
-  romegen.toNumerals.mockImplementation(async () => {
-    throw new Error("Some error");
-  });
-  const wrapper = shallow(<Translator />);
-  wrapper.find("input").simulate("change", { target: { value: "MMMCMXXII" } });
+it("swaps output to input when mode switched", async () => {
+  romegen.toDecimal.mockImplementation(async () => 2001);
+  romegen.toNumerals.mockImplementation(async () => "MMI");
 
+  const wrapper = shallow(<Translator />);
+
+  wrapper.find("input").simulate("change", { target: { value: "2001" } });
   await flushPromises();
 
-  // Placeholder text
-  expect(wrapper.find(".output").text()).toBe("Output");
+  wrapper.find("button").simulate("click");
+  await flushPromises();
+
+  expect(wrapper.find("input").prop("value")).toBe("MMI");
+
+  expect(romegen.toDecimal).toHaveBeenCalledWith("MMI");
+  expect(wrapper.find(".output").text()).toBe("2001");
+});
+
+it("should set swap button to active when clicked", () => {
+  const wrapper = shallow(<Translator />);
+
+  wrapper.find("button").simulate("click");
+  expect(wrapper.find("button").hasClass("swap-button-active")).toBeTruthy();
+});
+
+it("should set swap button to inactive once the transition finishes", () => {
+  const wrapper = shallow(<Translator />);
+
+  wrapper.find("button").simulate("click");
+  wrapper.find("button").simulate("transitionEnd");
+  expect(wrapper.find("button").hasClass("swap-button-active")).toBeFalsy();
 });
