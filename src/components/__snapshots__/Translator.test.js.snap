@@ -1,38 +1,56 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`renders correctly 1`] = `
-<div>
+<div
+  className="Translator"
+>
   <div
-    className="input-title"
+    className="container"
   >
-    Decimal
-  </div>
-  <div>
+    <div
+      className="container-title"
+      id="input-title"
+    >
+      Decimal
+    </div>
     <input
+      className="input "
       onChange={[Function]}
       placeholder="Type a decimal up to 3999"
       type="text"
+      value=""
     />
-  </div>
-  <div
-    className="error"
-  >
-    
+    <div
+      className="error"
+    >
+      
+    </div>
   </div>
   <button
+    className=" swap-button"
     onClick={[Function]}
+    onTransitionEnd={[Function]}
   >
     &lt;--&gt;
   </button>
   <div
-    className="output-title"
+    className="container"
   >
-    Numerals
-  </div>
-  <div
-    className="output"
-  >
-    Output
+    <div
+      className="container-title"
+      id="output-title"
+    >
+      Numerals
+    </div>
+    <div
+      className="output-container"
+    >
+      <div
+        className="output"
+      >
+        
+      </div>
+    </div>
   </div>
 </div>
 `;

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import "./Translator.css";
+import styles from "./Translator.module.css";
 
 import * as romegen from "../api/romegen";
 
@@ -14,9 +14,11 @@ export default class Translator extends Component {
     super(props);
 
     this.state = {
-      output: this.OUTPUT_PLACEHOLDER,
+      input: "",
+      output: "",
       forwards: true,
-      errorMessage: ""
+      errorMessage: "",
+      switchActive: false
     };
 
     this.handleInput.bind(this);
@@ -27,29 +29,48 @@ export default class Translator extends Component {
    * Switch the translation direction
    */
   switchDirection = () => {
-    this.setState({ forwards: !this.state.forwards });
+    this.setState(
+      { switchActive: true, forwards: !this.state.forwards },
+      () => {
+        this.handleInput(this.state.output);
+      }
+    );
   };
+
+  showOutput(output) {
+    this.setState({ output });
+  }
+
+  showErrorMessage(errorMessage) {
+    this.setState({ errorMessage });
+  }
+
+  resetErrorMessage() {
+    this.setState({ errorMessage: "" });
+  }
 
   /**
    * Handle automatically updating
    * the output when we get any input
    */
-  handleInput = async event => {
-    const inputText = event.target.value;
-
-    this.setState({ errorMessage: "" });
+  handleInput = async inputText => {
+    this.setState({
+      input: inputText
+    });
 
     if (inputText.length === 0) {
-      this.setState({ output: this.OUTPUT_PLACEHOLDER });
+      this.resetErrorMessage();
+      this.showOutput("");
       return;
     }
 
     try {
       if (this.state.forwards) {
-        this.setState({ output: await romegen.toNumerals(inputText) });
+        this.showOutput(await romegen.toNumerals(inputText));
       } else {
-        this.setState({ output: await romegen.toDecimal(inputText) });
+        this.showOutput(await romegen.toDecimal(inputText));
       }
+      this.resetErrorMessage();
     } catch (e) {
       // Pull errors from api
       if (e.response) {
@@ -58,43 +79,63 @@ export default class Translator extends Component {
           e.response.data &&
           e.response.data.error
         ) {
-          this.setState({ errorMessage: e.response.data.error });
+          this.showErrorMessage(e.response.data.error);
         } else {
-          this.setState({ errorMessage: "Server error" });
+          this.showErrorMessage("Server error");
         }
       } else {
-        this.setState({ errorMessage: "Unknown error" });
+        this.showErrorMessage("Unknown error");
       }
-
-      this.setState({ output: this.OUTPUT_PLACEHOLDER });
     }
   };
 
   render() {
     return (
-      <div>
-        <div className="input-title">
-          {this.state.forwards ? this.DECIMAL_TEXT : this.NUMERALS_TEXT}
-        </div>
-        <div>
+      <div className={styles.Translator}>
+        <div className={styles.container}>
+          <div className={styles["container-title"]} id="input-title">
+            {this.state.forwards ? this.DECIMAL_TEXT : this.NUMERALS_TEXT}
+          </div>
           <input
+            className={
+              styles.input +
+              " " +
+              (this.state.errorMessage.length > 0 ? styles["input-error"] : "")
+            }
             type="text"
-            onChange={this.handleInput}
+            value={this.state.input}
+            onChange={e => this.handleInput(e.target.value)}
             placeholder={
               this.state.forwards
                 ? "Type a decimal up to 3999"
-                : "Type a set a numerals"
+                : "Type a set of Roman Numerals"
             }
           />
+          <div className={styles.error}>{this.state.errorMessage}</div>
         </div>
-        <div className="error">{this.state.errorMessage}</div>
 
-        <button onClick={this.switchDirection}>{"<-->"}</button>
+        <button
+          className={
+            (this.state.switchActive ? [styles["swap-button-active"]] : "") +
+            " " +
+            styles["swap-button"]
+          }
+          onTransitionEnd={e => {
+            this.setState({ switchActive: false });
+          }}
+          onClick={this.switchDirection}
+        >
+          {"<-->"}
+        </button>
 
-        <div className="output-title">
-          {this.state.forwards ? this.NUMERALS_TEXT : this.DECIMAL_TEXT}
+        <div className={styles.container}>
+          <div className={styles["container-title"]} id="output-title">
+            {this.state.forwards ? this.NUMERALS_TEXT : this.DECIMAL_TEXT}
+          </div>
+          <div className={styles["output-container"]}>
+            <div className={styles.output}>{this.state.output}</div>
+          </div>
         </div>
-        <div className="output">{this.state.output}</div>
       </div>
     );
   }
