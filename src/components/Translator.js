@@ -104,7 +104,7 @@ export default class Translator extends Component {
             }
             type="text"
             value={this.state.input}
-            onChange={e => this.handleInput(e.target.value)}
+            onChange={e => this.handleInput(e.target.value.toUpperCase())}
             placeholder={
               this.state.forwards
                 ? "Type a decimal up to 3999"
