@@ -182,3 +182,10 @@ it("should set swap button to inactive once the transition finishes", () => {
   wrapper.find("button").simulate("transitionEnd");
   expect(wrapper.find("button").hasClass("swap-button-active")).toBeFalsy();
 });
+
+it("always converts input to uppercase", () => {
+  const wrapper = shallow(<Translator />);
+  wrapper.find("input").simulate("change", { target: { value: "mi" } });
+
+  expect(wrapper.find("input").prop("value")).toBe("MI");
+});
